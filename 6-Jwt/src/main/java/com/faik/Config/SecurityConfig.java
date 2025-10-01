@@ -35,11 +35,19 @@ public class SecurityConfig {
 	@Autowired
 	private AuthEntryPoint authEntryPoint;
 	
+	public static final String[] SWAGGER_PATH_STRINGS = { // İstek atıldığında tokensız erişebilelim Swagger'ı kullanmak için
+			"/swagger-ui/**",
+			"/v3/api-docs/**",
+			"/swagger-ui.html"
+	};
+	
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http)  throws Exception{
 		http.csrf().disable().
 		authorizeHttpRequests(request->
-		request.requestMatchers(AUTHENTICATE,REGISTER,REFRESH_TOKEN).permitAll().anyRequest().authenticated()).
+		request.requestMatchers(AUTHENTICATE,REGISTER,REFRESH_TOKEN).permitAll().
+		requestMatchers(SWAGGER_PATH_STRINGS).permitAll().
+		anyRequest().authenticated()).
 		exceptionHandling().authenticationEntryPoint(authEntryPoint).and().
 		sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).
 		authenticationProvider(authenticationProvider).
